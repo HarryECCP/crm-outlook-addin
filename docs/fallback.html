@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECC CRM+ — Sign In</title>
+
+  <!-- MSAL for browser-based fallback auth when Office SSO fails (13xxx errors) -->
+  <script src="https://alcdn.msauth.net/browser/2.32.0/js/msal-browser.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="pane-state">
+    <div class="spinner" id="auth-spinner" aria-label="Signing in"></div>
+    <p id="auth-status">Signing you in to ECC CRM+…</p>
+  </div>
+
+  <script>
+    // This page is opened via Office.context.ui.displayDialogAsync() when SSO fails.
+    // It performs an interactive MSAL auth and posts the token back to the task pane.
+
+    const TENANT_ID = '7c7620a7-3457-48e7-80d9-24300c4b1b28';
+    const CLIENT_ID = '04be782e-7f91-4593-8b09-243cc69652e3';
+    const REDIRECT_URI = 'https://harryeccp.github.io/crm-outlook-addin/fallback.html';
+
+    const msalConfig = {
+      auth: {
+        clientId: CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${TENANT_ID}`,
+        redirectUri: REDIRECT_URI,
+      },
+      cache: { cacheLocation: 'sessionStorage' },
+    };
+
+    const msalApp = new msal.PublicClientApplication(msalConfig);
+
+    async function init() {
+      // Check if this is a redirect response
+      const response = await msalApp.handleRedirectPromise().catch(err => {
+        showError(`Authentication failed: ${err.message}`);
+        return null;
+      });
+
+      if (response && response.accessToken) {
+        // Post token back to taskpane and close dialog
+        Office.context.ui.messageParent(JSON.stringify({
+          type: 'auth_success',
+          token: response.accessToken,
+        }));
+        return;
+      }
+
+      // No token yet — start interactive redirect
+      msalApp.loginRedirect({
+        scopes: [`api://${CLIENT_ID}/access_as_user`],
+        prompt: 'select_account',
+      });
+    }
+
+    function showError(msg) {
+      document.getElementById('auth-spinner').style.display = 'none';
+      document.getElementById('auth-status').textContent = msg;
+    }
+
+    // Office.js is not available in the dialog — use raw window.Office check
+    if (typeof Office !== 'undefined') {
+      Office.onReady(init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>

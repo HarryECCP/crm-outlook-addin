@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECC Lead Quick-Add</title>
+
+  <!-- Office.js — must be loaded from Microsoft's CDN -->
+  <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
+  <!-- Fluent Web Components (no build step required) -->
+  <script type="module" src="https://unpkg.com/@fluentui/web-components@2/dist/web-components.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Loading state — shown until Office.onReady() + schema load completes -->
+  <div id="loading" class="pane-state">
+    <div class="spinner" aria-label="Loading"></div>
+    <p>Loading ECC CRM+…</p>
+  </div>
+
+  <!-- Auth error state -->
+  <div id="auth-error" class="pane-state hidden">
+    <div class="state-icon state-icon--error">✕</div>
+    <p class="state-title">Sign-in required</p>
+    <p class="state-body" id="auth-error-message"></p>
+    <button class="btn btn--primary" id="auth-retry-btn">Try again</button>
+    <button class="btn btn--secondary" id="auth-fallback-btn">Sign in with browser</button>
+  </div>
+
+  <!-- Generic error state -->
+  <div id="error" class="pane-state hidden">
+    <div class="state-icon state-icon--error">!</div>
+    <p class="state-title" id="error-title">Something went wrong</p>
+    <p class="state-body" id="error-message"></p>
+    <button class="btn btn--secondary" id="error-retry-btn">Retry</button>
+  </div>
+
+  <!-- Main form — populated by taskpane.js -->
+  <div id="app" class="hidden">
+    <!-- Prefill banner -->
+    <div id="prefill-banner" class="prefill-banner hidden">
+      <div class="prefill-banner__text">
+        <strong id="prefill-company-name"></strong>
+        <span id="prefill-contact-name"></span>
+      </div>
+      <div class="prefill-banner__actions">
+        <button class="btn btn--small btn--primary" id="prefill-use-btn">Use match</button>
+        <button class="btn btn--small btn--ghost" id="prefill-new-btn">Create new</button>
+      </div>
+    </div>
+
+    <!-- Form rendered by taskpane.js -->
+    <form id="lead-form" novalidate>
+      <div id="form-sections"></div>
+      <div class="form-footer">
+        <button type="submit" class="btn btn--primary btn--full" id="submit-btn" disabled>
+          Add Lead
+        </button>
+      </div>
+    </form>
+
+    <!-- Success state (shown after submit) -->
+    <div id="success" class="pane-state hidden">
+      <div class="state-icon state-icon--success">✓</div>
+      <p class="state-title">Lead added</p>
+      <p class="state-body" id="success-company-name"></p>
+      <div class="success-actions">
+        <button class="btn btn--primary btn--full" id="view-lead-btn">View in hub</button>
+        <button class="btn btn--secondary btn--full" id="create-another-btn">Add another</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script src="taskpane.js"></script>
+</body>
+</html>

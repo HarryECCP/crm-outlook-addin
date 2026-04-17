@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp
+  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+  xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
+  xsi:type="MailApp">
+
+  <!-- Add-in identity -->
+  <Id>f5a96b3c-8d42-4e17-b5c8-9a0d2e3f4b71</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>East Coast Canning &amp; Printing</ProviderName>
+  <DefaultLocale>en-AU</DefaultLocale>
+  <DisplayName DefaultValue="ECC Lead Quick-Add" />
+  <Description DefaultValue="Add leads from emails to ECC CRM+ in seconds." />
+
+  <IconUrl DefaultValue="https://harryeccp.github.io/crm-outlook-addin/assets/icon-64.png" />
+  <HighResolutionIconUrl DefaultValue="https://harryeccp.github.io/crm-outlook-addin/assets/icon-128.png" />
+  <SupportUrl DefaultValue="mailto:harry@eastcoastcanning.com.au" />
+
+  <!-- Domains the add-in communicates with -->
+  <AppDomains>
+    <AppDomain>harryeccp.github.io</AppDomain>
+    <AppDomain>ecc-crmplus.azurewebsites.net</AppDomain>
+    <AppDomain>login.microsoftonline.com</AppDomain>
+  </AppDomains>
+
+  <!-- Office clients this add-in supports -->
+  <Hosts>
+    <Host Name="Mailbox" />
+  </Hosts>
+
+  <!-- Minimum API requirement -->
+  <Requirements>
+    <Sets>
+      <Set Name="Mailbox" MinVersion="1.1" />
+    </Sets>
+  </Requirements>
+
+  <!-- Form settings for clients without VersionOverrides support -->
+  <FormSettings>
+    <Form xsi:type="ItemRead">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://harryeccp.github.io/crm-outlook-addin/taskpane.html" />
+        <RequestedHeight>450</RequestedHeight>
+      </DesktopSettings>
+      <TabletSettings>
+        <SourceLocation DefaultValue="https://harryeccp.github.io/crm-outlook-addin/taskpane.html" />
+        <RequestedHeight>450</RequestedHeight>
+      </TabletSettings>
+      <PhoneSettings>
+        <SourceLocation DefaultValue="https://harryeccp.github.io/crm-outlook-addin/taskpane.html" />
+        <RequestedHeight>450</RequestedHeight>
+      </PhoneSettings>
+    </Form>
+  </FormSettings>
+
+  <!-- Activation rules: show for all email messages -->
+  <Rule xsi:type="RuleCollection" Mode="Or">
+    <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read" />
+  </Rule>
+
+  <!-- VersionOverrides block — controls ribbon button + SSO -->
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.1" xsi:type="VersionOverridesV1_1">
+
+      <Requirements>
+        <bt:Sets DefaultMinVersion="1.5">
+          <bt:Set Name="Mailbox" />
+        </bt:Sets>
+      </Requirements>
+
+      <Hosts>
+        <Host xsi:type="MailHost">
+          <DesktopFormFactor>
+
+            <!-- Commands (function file — required even if no ribbon commands are added) -->
+            <FunctionFile resid="Commands.Url" />
+
+            <!-- Message read surface -->
+            <ExtensionPoint xsi:type="MessageReadCommandSurface">
+              <OfficeTab id="TabDefault">
+                <Group id="eccp.group1">
+                  <Label resid="GroupLabel" />
+
+                  <Control xsi:type="Button" id="eccp.TaskpaneButton">
+                    <Label resid="TaskpaneButton.Label" />
+                    <Supertip>
+                      <Title resid="TaskpaneButton.Label" />
+                      <Description resid="TaskpaneButton.Tooltip" />
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.16x16" />
+                      <bt:Image size="32" resid="Icon.32x32" />
+                      <bt:Image size="80" resid="Icon.80x80" />
+                    </Icon>
+                    <Action xsi:type="ShowTaskpane">
+                      <TaskpaneId>ButtonId1</TaskpaneId>
+                      <SourceLocation resid="Taskpane.Url" />
+                    </Action>
+                  </Control>
+
+                </Group>
+              </OfficeTab>
+            </ExtensionPoint>
+
+          </DesktopFormFactor>
+        </Host>
+      </Hosts>
+
+      <!-- Office SSO — pre-authorises Microsoft Office clients, no consent prompt -->
+      <WebApplicationInfo>
+        <Id>04be782e-7f91-4593-8b09-243cc69652e3</Id>
+        <Resource>api://04be782e-7f91-4593-8b09-243cc69652e3</Resource>
+        <Scopes>
+          <Scope>access_as_user</Scope>
+        </Scopes>
+      </WebApplicationInfo>
+
+      <Resources>
+        <bt:Images>
+          <bt:Image id="Icon.16x16" DefaultValue="https://harryeccp.github.io/crm-outlook-addin/assets/icon-16.png" />
+          <bt:Image id="Icon.32x32" DefaultValue="https://harryeccp.github.io/crm-outlook-addin/assets/icon-32.png" />
+          <bt:Image id="Icon.80x80" DefaultValue="https://harryeccp.github.io/crm-outlook-addin/assets/icon-80.png" />
+        </bt:Images>
+        <bt:Urls>
+          <bt:Url id="Commands.Url" DefaultValue="https://harryeccp.github.io/crm-outlook-addin/commands.html" />
+          <bt:Url id="Taskpane.Url" DefaultValue="https://harryeccp.github.io/crm-outlook-addin/taskpane.html" />
+        </bt:Urls>
+        <bt:ShortStrings>
+          <bt:String id="GroupLabel" DefaultValue="ECC CRM+" />
+          <bt:String id="TaskpaneButton.Label" DefaultValue="Add Lead" />
+        </bt:ShortStrings>
+        <bt:LongStrings>
+          <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Open the ECC Lead Quick-Add panel" />
+        </bt:LongStrings>
+      </Resources>
+
+    </VersionOverrides>
+  </VersionOverrides>
+
+</OfficeApp>
