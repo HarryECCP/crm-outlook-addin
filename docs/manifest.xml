@@ -5,8 +5,8 @@
   xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
   xsi:type="MailApp">
 
-  <Id>f5a96b3c-8d42-4e17-b5c8-9a0d2e3f4b71</Id>
-  <Version>1.0.0.0</Version>
+  <Id>57eaac87-1d94-4258-af30-cf1e407d4c33</Id>
+  <Version>1.0.0.1</Version>
   <ProviderName>East Coast Canning &amp; Printing</ProviderName>
   <DefaultLocale>en-AU</DefaultLocale>
   <DisplayName DefaultValue="ECC Lead Quick-Add" />
