@@ -14,7 +14,7 @@
 
   <IconUrl DefaultValue="https://harryeccp.github.io/crm-outlook-addin/assets/icon-64.png" />
   <HighResolutionIconUrl DefaultValue="https://harryeccp.github.io/crm-outlook-addin/assets/icon-128.png" />
-  <SupportUrl DefaultValue="mailto:harry@eastcoastcanning.com.au" />
+  <SupportUrl DefaultValue="https://harryeccp.github.io/crm-outlook-addin/" />
 
   <AppDomains>
     <AppDomain>harryeccp.github.io</AppDomain>
