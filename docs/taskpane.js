@@ -542,6 +542,7 @@ function wireStateAssignment() {
         Array.from(assignedCpInput.options).forEach(opt => {
           opt.selected = opt.value === assignment.display_name;
         });
+        updateSubmitState();
       }
     } catch {}
   });
