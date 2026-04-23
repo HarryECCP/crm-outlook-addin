@@ -284,7 +284,7 @@ function buildHiddenInput(field) {
   input.type           = 'hidden';
   input.dataset.table  = field.table_name;
   input.dataset.column = field.column_name;
-  input.value          = field.default_value ?? '';
+  input.value          = resolveDefaultValue(field) ?? '';
   return input;
 }
 
@@ -580,17 +580,25 @@ function showInlineMatchBanner(type, match, onAccept) {
 
 // ── Prefill helpers ───────────────────────────────────────────────────────────
 
+// Returns a field's default value. The API column is named default_value_expr;
+// literal values (no {{ template markers}) are safe to use directly.
+function resolveDefaultValue(field) {
+  if (field.default_value != null) return field.default_value;
+  const expr = field.default_value_expr;
+  return (expr && !expr.startsWith('{{')) ? expr : null;
+}
+
 function getPrefillValue(field, { ctx, matchedCompany, matchedContact, useMatch }) {
-  // Server has already resolved {{sender.*}} etc. into field.default_value
+  const defVal = resolveDefaultValue(field);
   if (useMatch) {
     if (field.table_name === 'companies' && matchedCompany) {
-      return matchedCompany[field.column_name] ?? field.default_value ?? null;
+      return matchedCompany[field.column_name] ?? defVal;
     }
     if (field.table_name === 'contacts' && matchedContact) {
-      return matchedContact[field.column_name] ?? field.default_value ?? null;
+      return matchedContact[field.column_name] ?? defVal;
     }
   }
-  return field.default_value ?? null;
+  return defVal;
 }
 
 function prefillCompanyFields(company) {
@@ -736,7 +744,7 @@ async function handleSubmit(e) {
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 function groupBySection(fields) {
-  const order = ['company', 'contact', 'lead', 'qualification'];
+  const order = ['contact', 'company', 'lead', 'qualification'];
   const map   = {};
 
   for (const f of fields) {

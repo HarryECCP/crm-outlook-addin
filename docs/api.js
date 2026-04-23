@@ -95,7 +95,7 @@ const API = (() => {
    * Returns all hub_users for the "Assign to" picker.
    */
   async function getUsers() {
-    return _fetch('/crm/users');
+    return _fetch('/crm/users?cp=true');
   }
 
   /**
