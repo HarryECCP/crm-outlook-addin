@@ -639,7 +639,7 @@ function validateField(field, widget, errorEl) {
 function updateSubmitState() {
   if (!_schema) { El.submitBtn.disabled = true; return; }
 
-  const visibleRequired = _schema.fields.filter(f => f.is_visible && f.is_required);
+  const visibleRequired = _schema.fields.filter(f => f.is_visible && f.is_required_override);
   const allFilled = visibleRequired.every(f => {
     const input = getFieldInput(f.table_name, f.column_name);
     if (!input) return false;
@@ -703,6 +703,26 @@ async function handleSubmit(e) {
   El.submitBtn.textContent = 'Adding…';
 
   try {
+    // Validate required fields before sending
+    const requiredFields = (_schema?.fields ?? []).filter(f => f.is_visible && f.is_required_override);
+    let firstInvalid = null;
+    for (const f of requiredFields) {
+      const input = getFieldInput(f.table_name, f.column_name);
+      const val   = getWidgetValue(input);
+      if (val === '' || val === null || val === undefined) {
+        firstInvalid = f;
+        break;
+      }
+    }
+    if (firstInvalid) {
+      El.errorTitle.textContent = 'Required field missing';
+      El.errorMsg.textContent   = `"${firstInvalid.label ?? firstInvalid.column_name}" is required.`;
+      showView('error');
+      El.submitBtn.disabled    = false;
+      El.submitBtn.textContent = 'Add Lead';
+      return;
+    }
+
     const payload = collectPayload();
     const result  = await API.createLead(payload);
 
