@@ -246,7 +246,7 @@ function buildFieldRow(field, users, prefillValue) {
   wrap.dataset.column = field.column_name;
 
   const labelEl = document.createElement('label');
-  labelEl.className = `form-field__label${field.is_required ? ' form-field__label--required' : ''}`;
+  labelEl.className = `form-field__label${field.is_required_override ? ' form-field__label--required' : ''}`;
   labelEl.textContent = field.label ?? titleCase(field.column_name);
   labelEl.htmlFor     = fieldId(field);
 
@@ -313,7 +313,7 @@ function buildTextInput(field, value, type = 'text') {
   input.dataset.column = field.column_name;
   input.placeholder  = field.placeholder ?? '';
   input.value        = value ?? '';
-  if (field.is_required) input.required = true;
+  if (field.is_required_override) input.required = true;
   return input;
 }
 
@@ -324,7 +324,7 @@ function buildTextarea(field, value) {
   ta.dataset.column = field.column_name;
   ta.placeholder   = field.placeholder ?? '';
   ta.value         = value ?? '';
-  if (field.is_required) ta.required = true;
+  if (field.is_required_override) ta.required = true;
   return ta;
 }
 
@@ -333,7 +333,7 @@ function buildSelect(field, value) {
   sel.className     = 'form-field__select';
   sel.dataset.table  = field.table_name;
   sel.dataset.column = field.column_name;
-  if (field.is_required) sel.required = true;
+  if (field.is_required_override) sel.required = true;
 
   const blank = document.createElement('option');
   blank.value   = '';
@@ -381,7 +381,7 @@ function buildUsersLookup(field, users, value) {
   sel.className     = 'form-field__select';
   sel.dataset.table  = field.table_name;
   sel.dataset.column = field.column_name;
-  if (field.is_required) sel.required = true;
+  if (field.is_required_override) sel.required = true;
 
   const blank = document.createElement('option');
   blank.value       = '';
@@ -417,7 +417,7 @@ function buildLookupOrText(field, value) {
   input.dataset.column = field.column_name;
   input.placeholder   = field.placeholder ?? 'Search or type a name…';
   input.value         = value ?? '';
-  if (field.is_required) input.required = true;
+  if (field.is_required_override) input.required = true;
 
   // Hidden companion that stores selected record UUID
   const idInput         = document.createElement('input');
@@ -624,7 +624,7 @@ function setInputValue(el, val) {
 
 function validateField(field, widget, errorEl) {
   const val = getWidgetValue(widget);
-  if (field.is_required && (val === '' || val === null || val === undefined)) {
+  if (field.is_required_override && (val === '' || val === null || val === undefined)) {
     const errorId = `${fieldId(field)}-error`;
     errorEl.textContent = `${field.label ?? titleCase(field.column_name)} is required`;
     errorEl.classList.add('visible');
