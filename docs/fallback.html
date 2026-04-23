@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ECC CRM+ — Sign In</title>
 
+  <!-- Office.js must load first so messageParent is available after the MSAL redirect returns -->
+  <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <!-- MSAL for browser-based fallback auth when Office SSO fails (13xxx errors) -->
   <script src="https://alcdn.msauth.net/browser/2.32.0/js/msal-browser.min.js"></script>
 
@@ -63,12 +65,7 @@
       document.getElementById('auth-status').textContent = msg;
     }
 
-    // Office.js is not available in the dialog — use raw window.Office check
-    if (typeof Office !== 'undefined') {
-      Office.onReady(init);
-    } else {
-      init();
-    }
+    Office.onReady(init);
   </script>
 </body>
 </html>
