@@ -45,6 +45,12 @@
       });
 
       if (response && response.accessToken) {
+        // Decode JWT claims for diagnostics (header.payload.sig — payload is base64url)
+        try {
+          const payload = JSON.parse(atob(response.accessToken.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+          console.log('[fallback] token aud:', payload.aud, '| iss:', payload.iss, '| scp:', payload.scp);
+        } catch (e) { console.warn('[fallback] could not decode token:', e); }
+
         // Post token back to taskpane and close dialog
         Office.context.ui.messageParent(JSON.stringify({
           type: 'auth_success',
