@@ -638,17 +638,7 @@ function validateField(field, widget, errorEl) {
 }
 
 function updateSubmitState() {
-  if (!_schema) { El.submitBtn.disabled = true; return; }
-
-  const visibleRequired = _schema.fields.filter(f => f.is_visible && f.is_required_override);
-  const allFilled = visibleRequired.every(f => {
-    const input = getFieldInput(f.table_name, f.column_name);
-    if (!input) return false;
-    const val = getWidgetValue(input);
-    return val !== '' && val !== null && val !== undefined;
-  });
-
-  El.submitBtn.disabled = !allFilled;
+  El.submitBtn.disabled = !_schema;
 }
 
 // ── Payload collection ────────────────────────────────────────────────────────
@@ -704,21 +694,19 @@ async function handleSubmit(e) {
   El.submitBtn.textContent = 'Adding…';
 
   try {
-    // Validate required fields before sending
+    // Validate required fields inline — highlight each invalid field in the form
     const requiredFields = (_schema?.fields ?? []).filter(f => f.is_visible && f.is_required_override);
-    let firstInvalid = null;
+    let firstInvalidEl = null;
     for (const f of requiredFields) {
-      const input = getFieldInput(f.table_name, f.column_name);
-      const val   = getWidgetValue(input);
-      if (val === '' || val === null || val === undefined) {
-        firstInvalid = f;
-        break;
+      const domId   = fieldId(f);
+      const widget  = document.getElementById(domId);
+      const errorEl = document.getElementById(`${domId}-error`);
+      if (widget && !validateField(f, widget, errorEl)) {
+        if (!firstInvalidEl) firstInvalidEl = widget;
       }
     }
-    if (firstInvalid) {
-      El.errorTitle.textContent = 'Required field missing';
-      El.errorMsg.textContent   = `"${firstInvalid.label ?? firstInvalid.column_name}" is required.`;
-      showView('error');
+    if (firstInvalidEl) {
+      firstInvalidEl.closest('.form-field')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       El.submitBtn.disabled    = false;
       El.submitBtn.textContent = 'Add Lead';
       return;
