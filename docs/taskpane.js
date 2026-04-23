@@ -709,9 +709,9 @@ async function handleSubmit(e) {
     _hubUrl = result.hub_url;
 
     const companyName = payload.company_data?.name ?? 'lead';
-    El.successCompany.textContent = result.created_new_company
-      ? `New company created: ${companyName}`
-      : `Added to existing: ${companyName}`;
+    El.successCompany.textContent = result.company_id
+      ? `Linked to: ${companyName}`
+      : `Lead saved · ${companyName} (not yet in system)`;
 
     El.viewLeadBtn.onclick = () => {
       Office.context.ui.openBrowserWindow(_hubUrl);
