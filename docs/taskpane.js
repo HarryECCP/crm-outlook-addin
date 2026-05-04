@@ -299,6 +299,7 @@ function buildWidget(field, users, prefillValue) {
     case 'toggle':        return buildToggle(field, prefillValue);
     case 'users_lookup':  return buildUsersLookup(field, users, prefillValue);
     case 'lookup_or_text':return buildLookupOrText(field, prefillValue);
+    case 'number':        return buildTextInput(field, prefillValue, 'number');
     case 'email':         return buildTextInput(field, prefillValue, 'email');
     case 'phone':         return buildTextInput(field, prefillValue, 'tel');
     default:              return buildTextInput(field, prefillValue, 'text');
