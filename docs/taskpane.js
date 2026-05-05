@@ -297,6 +297,7 @@ function buildWidget(field, users, prefillValue) {
     case 'textarea':      return buildTextarea(field, prefillValue);
     case 'select':        return buildSelect(field, prefillValue);
     case 'toggle':        return buildToggle(field, prefillValue);
+    case 'checkbox_group':return buildCheckboxGroup(field, prefillValue);
     case 'users_lookup':  return buildUsersLookup(field, users, prefillValue);
     case 'lookup_or_text':return buildLookupOrText(field, prefillValue);
     case 'number':        return buildTextInput(field, prefillValue, 'number');
@@ -374,6 +375,29 @@ function buildToggle(field, value) {
 
   wrap.appendChild(chk);
   wrap.appendChild(lbl);
+  return wrap;
+}
+
+function buildCheckboxGroup(field, value) {
+  const selected = Array.isArray(value) ? value : [];
+  const wrap = document.createElement('div');
+  wrap.className       = 'form-field__checkbox-group';
+  wrap.dataset.table   = field.table_name;
+  wrap.dataset.column  = field.column_name;
+
+  for (const opt of (field.options ?? [])) {
+    const item = document.createElement('label');
+    item.className = 'form-field__checkbox-item';
+    const chk  = document.createElement('input');
+    chk.type   = 'checkbox';
+    chk.value  = opt.value;
+    chk.checked = selected.includes(opt.value);
+    const span = document.createElement('span');
+    span.textContent = opt.label ?? opt.value;
+    item.appendChild(chk);
+    item.appendChild(span);
+    wrap.appendChild(item);
+  }
   return wrap;
 }
 
@@ -661,6 +685,7 @@ function collectPayload() {
 
     const val = getWidgetValue(input);
     if (val === '' || val === null || val === undefined) continue;
+    if (Array.isArray(val) && val.length === 0) continue;
 
     if (table === 'companies') company_data[column] = val;
     else if (table === 'contacts') contact_data[column] = val;
@@ -793,6 +818,10 @@ function getWidgetValue(el) {
   if (el.classList?.contains('form-field__toggle-wrap')) {
     const chk = el.querySelector('input[type="checkbox"]');
     return chk ? chk.checked : null;
+  }
+  // checkbox-group div: return array of checked values
+  if (el.classList?.contains('form-field__checkbox-group')) {
+    return Array.from(el.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value);
   }
   // lookup_or_text wrap div: find the text input
   if (el.style?.position === 'relative') {

@@ -302,6 +302,32 @@ body {
 
 .form-field__toggle:checked::after { left: 18px; }
 
+/* Checkbox group */
+.form-field__checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.form-field__checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--clr-text);
+  line-height: 1.3;
+}
+
+.form-field__checkbox-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--clr-accent);
+}
+
 /* Success actions */
 .success-actions {
   display: flex;
